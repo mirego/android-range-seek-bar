@@ -11,7 +11,7 @@ buildscript {
 apply plugin: 'com.android.library'
 
 group = 'org.florescu.android.rangeseekbar'
-version = '0.3.0-mirego'
+version = '0.3.1-mirego'
 
 android {
     compileSdkVersion 21

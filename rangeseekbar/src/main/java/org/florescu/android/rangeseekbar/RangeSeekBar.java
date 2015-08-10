@@ -110,6 +110,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private int mTextOffset;
     private int mTextSize;
     private int mDistanceToTop;
+    private int mRoundedCorners;
     private RectF mRect;
 
     private boolean mSingleThumb;
@@ -178,6 +179,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 mShowLabels = a.getBoolean(R.styleable.RangeSeekBar_showLabels, true);
                 mInternalPad = a.getDimensionPixelSize(R.styleable.RangeSeekBar_internalPadding, INITIAL_PADDING_IN_DP);
                 barHeight = a.getDimensionPixelSize(R.styleable.RangeSeekBar_barHeight, LINE_HEIGHT_IN_DP);
+                mRoundedCorners = a.getDimensionPixelSize(R.styleable.RangeSeekBar_roundedCorners, 0);
                 mActiveColor = a.getColor(R.styleable.RangeSeekBar_activeColor, ACTIVE_COLOR);
                 mDefaultColor = a.getColor(R.styleable.RangeSeekBar_defaultColor, Color.GRAY);
                 mTextAboveThumbsColor = a.getColor(R.styleable.RangeSeekBar_textAboveThumbsColor, Color.WHITE);
@@ -545,7 +547,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         // draw seek bar background line
         mRect.left = padding;
         mRect.right = getWidth() - padding;
-        canvas.drawRect(mRect, paint);
+        canvas.drawRoundRect(mRect, mRoundedCorners, mRoundedCorners, paint);
 
         boolean selectedValuesAreDefault = (getSelectedMinValue().equals(getAbsoluteMinValue()) &&
                 getSelectedMaxValue().equals(getAbsoluteMaxValue()));
@@ -572,7 +574,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 selectedValuesAreDefault);
 
         // draw the text if sliders have moved from default edges
-        if (mShowTextAboveThumbs && !selectedValuesAreDefault) {
+        if (mShowTextAboveThumbs) {
             paint.setTextSize(mTextSize);
             paint.setColor(mTextAboveThumbsColor);
             // give text a bit more space here so it doesn't get cut off
