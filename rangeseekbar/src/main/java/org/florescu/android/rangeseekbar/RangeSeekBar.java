@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -122,6 +123,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private int mDefaultColor;
     private int mTextAboveThumbsColor;
 
+    private String mMinLabel;
+    private String mMaxLabel;
+
     public RangeSeekBar(Context context) {
         super(context);
         init(context, null);
@@ -196,6 +200,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 if (pressedDrawable != null) {
                     thumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
                 }
+
+                mMinLabel = a.getString(R.styleable.RangeSeekBar_minLabel);
+                mMaxLabel = a.getString(R.styleable.RangeSeekBar_maxLabel);
             } finally {
                 a.recycle();
             }
@@ -342,6 +349,42 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         } else {
             setNormalizedMaxValue(valueToNormalized(value));
         }
+    }
+
+    /**
+     * Returns the string that shows up when the minimum value is reached.
+     *
+     * @return The label that will show up instead of the minimum value.
+     */
+    public String getMinLabel() {
+        return mMinLabel;
+    }
+
+    /**
+     * Sets the string that shows up when the minimum value is reached
+     *
+     * @param value The label that will show up instead of the minimum value.
+     */
+    public void setMinLabel(String value) {
+        this.mMinLabel = value;
+    }
+
+    /**
+     * Returns the string that shows up when the maximum value is reached.
+     *
+     * @return The label that will show up instead of the maximum value.
+     */
+    public String getMaxLabel() {
+        return mMaxLabel;
+    }
+
+    /**
+     * Sets the string that shows up when the maximum value is reached
+     *
+     * @param value The label that will show up instead of the maximum value.
+     */
+    public void setMaxLabel(String value) {
+        this.mMaxLabel = value;
     }
 
     /**
@@ -582,6 +625,15 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
             String minText = String.valueOf(getSelectedMinValue());
             String maxText = String.valueOf(getSelectedMaxValue());
+
+            if (!TextUtils.isEmpty(mMinLabel)) {
+                minText = mMinLabel;
+            }
+
+            if (!TextUtils.isEmpty(mMaxLabel)) {
+                maxText = mMaxLabel;
+            }
+
             float minTextWidth = paint.measureText(minText) + offset;
             float maxTextWidth = paint.measureText(maxText) + offset;
 
