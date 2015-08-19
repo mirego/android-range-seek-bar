@@ -626,11 +626,11 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             String minText = String.valueOf(getSelectedMinValue());
             String maxText = String.valueOf(getSelectedMaxValue());
 
-            if (!TextUtils.isEmpty(mMinLabel)) {
+            if (!TextUtils.isEmpty(mMinLabel) && getSelectedMinValue().equals(getAbsoluteMinValue())) {
                 minText = mMinLabel;
             }
 
-            if (!TextUtils.isEmpty(mMaxLabel)) {
+            if (!TextUtils.isEmpty(mMaxLabel) && getSelectedMaxValue().equals(getAbsoluteMaxValue())) {
                 maxText = mMaxLabel;
             }
 
