@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import org.florescu.android.util.BitmapUtil;
 import org.florescu.android.util.PixelUtil;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -123,8 +124,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private int mDefaultColor;
     private int mTextAboveThumbsColor;
 
-    private String mMinLabel;
-    private String mMaxLabel;
+    private RangeSeekBarValueProcessor mValueProcessor;
 
     public RangeSeekBar(Context context) {
         super(context);
@@ -200,9 +200,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
                 if (pressedDrawable != null) {
                     thumbPressedImage = BitmapUtil.drawableToBitmap(pressedDrawable);
                 }
-
-                mMinLabel = a.getString(R.styleable.RangeSeekBar_minLabel);
-                mMaxLabel = a.getString(R.styleable.RangeSeekBar_maxLabel);
             } finally {
                 a.recycle();
             }
@@ -237,6 +234,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         setFocusable(true);
         setFocusableInTouchMode(true);
         mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+
+        mValueProcessor = new RangeSeekBarValueProcessor();
     }
 
     public void setRangeValues(T minValue, T maxValue) {
@@ -352,42 +351,6 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Returns the string that shows up when the minimum value is reached.
-     *
-     * @return The label that will show up instead of the minimum value.
-     */
-    public String getMinLabel() {
-        return mMinLabel;
-    }
-
-    /**
-     * Sets the string that shows up when the minimum value is reached
-     *
-     * @param value The label that will show up instead of the minimum value.
-     */
-    public void setMinLabel(String value) {
-        this.mMinLabel = value;
-    }
-
-    /**
-     * Returns the string that shows up when the maximum value is reached.
-     *
-     * @return The label that will show up instead of the maximum value.
-     */
-    public String getMaxLabel() {
-        return mMaxLabel;
-    }
-
-    /**
-     * Sets the string that shows up when the maximum value is reached
-     *
-     * @param value The label that will show up instead of the maximum value.
-     */
-    public void setMaxLabel(String value) {
-        this.mMaxLabel = value;
-    }
-
-    /**
      * Registers given listener callback to notify about changed selected values.
      *
      * @param listener The listener to notify about changed selected values.
@@ -395,6 +358,14 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     @SuppressWarnings("unused")
     public void setOnRangeSeekBarChangeListener(OnRangeSeekBarChangeListener<T> listener) {
         this.listener = listener;
+    }
+
+    /**
+     * Sets the processor for displayed values in labels.
+     * @param valueProcessor The value processor to use.
+     */
+    public void setValueProcessor(RangeSeekBarValueProcessor valueProcessor) {
+        this.mValueProcessor = valueProcessor;
     }
 
     /**
@@ -626,12 +597,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
             String minText = String.valueOf(getSelectedMinValue());
             String maxText = String.valueOf(getSelectedMaxValue());
 
-            if (!TextUtils.isEmpty(mMinLabel) && getSelectedMinValue().equals(getAbsoluteMinValue())) {
-                minText = mMinLabel;
-            }
-
-            if (!TextUtils.isEmpty(mMaxLabel) && getSelectedMaxValue().equals(getAbsoluteMaxValue())) {
-                maxText = mMaxLabel;
+            if (mValueProcessor != null) {
+                minText = mValueProcessor.getProcessedValue(getSelectedMinValue());
+                maxText = mValueProcessor.getProcessedValue(getSelectedMaxValue());
             }
 
             float minTextWidth = paint.measureText(minText) + offset;
@@ -662,6 +630,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         bundle.putParcelable("SUPER", super.onSaveInstanceState());
         bundle.putDouble("MIN", normalizedMinValue);
         bundle.putDouble("MAX", normalizedMaxValue);
+        bundle.putSerializable("VALUE_PROCESSOR", mValueProcessor);
         return bundle;
     }
 
@@ -674,6 +643,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         super.onRestoreInstanceState(bundle.getParcelable("SUPER"));
         normalizedMinValue = bundle.getDouble("MIN");
         normalizedMaxValue = bundle.getDouble("MAX");
+        mValueProcessor = (RangeSeekBarValueProcessor) bundle.getSerializable("VALUE_PROCESSOR");
     }
 
     /**
@@ -870,5 +840,4 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
         void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, T minValue, T maxValue);
     }
-
 }
