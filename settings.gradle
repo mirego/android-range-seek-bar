@@ -1,1 +1,2 @@
 include ':rangeseekbar-sample', ':rangeseekbar'
+project(':rangeseekbar').name = 'android-range-seekbar'
