@@ -28,7 +28,8 @@
 
         <org.florescu.android.rangeseekbar.RangeSeekBar
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            rsb:roundedCorners="5dp"/>
 
         <TextView
             android:layout_width="fill_parent"
